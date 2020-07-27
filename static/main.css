@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,700;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Staatliches&display=swap');
+
+body {
+    font-family: 'Chakra Petch', sans-serif !important;
+}
+
+a, input[type=submit], [type=button], [type=reset] {
+    font-family: 'Staatliches', sans-serif !important;
+}
+
+#id_description {
+    width: 100%
+}

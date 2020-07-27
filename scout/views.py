@@ -1,0 +1,63 @@
+import requests
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import FormView
+
+from .forms import LocationForm
+from .models import Geolocation
+
+
+def get_geocode(payload: dict) -> (str, dict):
+    if "zip_code" in payload:
+        params = {"components": f"postal_code:{payload['zip_code']}"}
+    else:
+        params = {"address": f"{payload['city']},{payload['state']}"}
+    params.update({"key": settings.API_KEY_GOOGLE})
+    url = f"https://maps.googleapis.com/maps/api/geocode/json"
+    response = requests.get(url, params=params)
+    record = {}
+    if response.ok:
+        response_json = response.json()
+        status = response_json.get('status')
+        results = response_json.get('results', [])[0]
+        print(results)
+        if status == 'OK':
+            record = {
+                'place_id': results['place_id'],
+                'formatted_address': results['formatted_address'],
+                'lat': results['geometry']['location']['lat'],
+                'lon': results['geometry']['location']['lng']
+            }
+            fields_map = {
+                'postal_code': 'zip_code',
+                'locality': 'city',
+                'administrative_area_level_1': 'state'
+            }
+            for component in results['address_components']:
+                for k, v in fields_map.items():
+                    if k in component['types']:
+                        record.update({v: component['short_name']})
+    else:
+        status = f"{response.status_code}: {response.reason}"
+    return status, record
+
+
+class LocationView(LoginRequiredMixin, FormView):
+    template_name = 'scout/location_form.html'
+    form_class = LocationForm
+    success_url = 'home'
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        zip_code = form.cleaned_data.get('zip_code')
+        city = form.cleaned_data.get("city")
+        state = form.cleaned_data.get("state")
+        if zip_code:
+            status, record = get_geocode({"zip_code": zip_code})
+        else:
+            status, record = get_geocode({"city": city, "state": state})
+        print(status)
+        print(record)
+        geolocation = Geolocation(**record)
+        geolocation.save()
+        return super().form_valid(form)

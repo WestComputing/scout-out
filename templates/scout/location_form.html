@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block head_title %}Create Location{% endblock %}
+{% block content %}
+    <form method="POST">{% csrf_token %}
+        <p class="mt-3 mb-3 p-3 border shadow-sm bg-dark text-light text-center">Zip: {{ form.zip_code }}</p>
+        <p class="mx-auto text-center">-- OR --</p>
+        <p class="my-2 p-2 border shadow-sm text-center">City: {{ form.city }}</p>
+        <p class="my-2 p-2 border shadow-sm text-center">State: {{ form.state }}</p>
+        <div class="d-flex flex-wrap justify-content-around">
+            <a href="{% url 'home' %}">
+                <input class="btn btn-lg btn-secondary border shadow rounded-pill my-4 px-4 py-2"
+                       type="button" value="Cancel">
+            </a>
+            <input class="btn btn-lg btn-warning border shadow rounded-pill my-4 px-4 py-2"
+                   type="reset" value="Reset Form">
+            <input class="btn btn-lg btn-primary border shadow rounded-pill my-4 px-4 py-2"
+                   type="submit" value="Create">
+        </div>
+        {% include 'form_error_alert.html' %}
+    </form>
+{% endblock %}

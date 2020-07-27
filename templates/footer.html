@@ -1,0 +1,6 @@
+<footer>
+    {% if user.is_authenticated %}
+        <hr>
+        <h6 class="mx-2 text-right text-muted">Logged in as {{ user }} • <a href="{% url 'logout' %}">Log out</a></h6>
+    {% endif %}
+</footer>
