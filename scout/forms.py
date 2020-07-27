@@ -7,6 +7,7 @@ class LocationForm(forms.Form):
     zip_code = forms.CharField(max_length=5, required=False)
     city = forms.CharField(max_length=50, required=False)
     state = forms.CharField(max_length=2, required=False)
+    label = forms.CharField(max_length=50, required=False)
 
     def clean(self):
         cleaned_data = super().clean()

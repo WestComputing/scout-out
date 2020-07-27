@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import LocationView
+from .views import LocationFormView
 
 app_name = 'scout'
 urlpatterns = [
-    path('location/new/', LocationView.as_view(), name='location_new')
+    path('location/new/', LocationFormView.as_view(), name='location_new')
 ]
