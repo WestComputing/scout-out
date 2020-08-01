@@ -1,6 +1,7 @@
 import requests
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView
 from django.views.generic.edit import FormView
 
 from .forms import LocationForm
@@ -40,6 +41,18 @@ def get_geocode(payload: dict) -> (str, dict):
     return status, record
 
 
+def get_rec_areas(lat: str, lon: str):
+    url = f"https://ridb.recreation.gov/api/v1/recareas?"
+    params = dict(full='true', radius='50', latitude=lat, longitude=lon)
+    headers = dict(apikey=settings.API_KEY_RECREATION_GOV)
+    response = requests.get(url, params=params, headers=headers)
+    rec_areas = []
+    if response.ok:
+        response_json = response.json()
+        rec_areas = response_json.get('RECDATA', [])
+    return rec_areas
+
+
 class LocationFormView(LoginRequiredMixin, FormView):
     template_name = 'scout/location_form.html'
     form_class = LocationForm
@@ -57,6 +70,11 @@ class LocationFormView(LoginRequiredMixin, FormView):
         geolocation.save()
         UserGeolocation.objects.create(user=self.request.user,
                                        geolocation=geolocation,
-                                       label=form.cleaned_data.get('label')
-                                       )
+                                       label=form.cleaned_data.get('label'))
         return super().form_valid(form)
+
+
+class LocationView(LoginRequiredMixin, ListView):
+    def get_queryset(self):
+        users_locations = UserGeolocation.objects \
+            .filter(user_id=self.request.user.id).order_by('label')

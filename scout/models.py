@@ -25,6 +25,10 @@ class UserGeolocation(models.Model):
     class Meta:
         unique_together = ('user', 'label')
 
+    def __str__(self):
+        return f"{self.label}: {self.geolocation.city}, {self.geolocation.state} " \
+               f"{self.geolocation.zip_code} ({self.user.username})"
+
 # class RecArea(models.Model):
 #     name = models.CharField(max_length=100)
 #     description = models.TextField()
