@@ -1,11 +1,12 @@
 import requests
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.edit import FormView
 
 from .forms import LocationForm
-from .models import Geolocation, UserGeolocation
+from .models import Geolocation
 
 
 def get_geocode(payload: dict) -> (str, dict):
@@ -21,7 +22,6 @@ def get_geocode(payload: dict) -> (str, dict):
         response_json = response.json()
         status = response_json.get('status')
         results = response_json.get('results', [])[0]
-        print(results)
         if status == 'OK':
             record = dict(place_id=results['place_id'],
                           formatted_address=results['formatted_address'],
@@ -56,9 +56,11 @@ def get_rec_areas(lat: str, lon: str):
 class LocationFormView(LoginRequiredMixin, FormView):
     template_name = 'scout/location_form.html'
     form_class = LocationForm
-    success_url = 'home'
+    success_url = reverse_lazy('scout:index')
 
     def form_valid(self, form):
+        user = self.request.user
+        label = form.cleaned_data.get('label')
         zip_code = form.cleaned_data.get('zip_code')
         city = form.cleaned_data.get("city")
         state = form.cleaned_data.get("state")
@@ -66,15 +68,15 @@ class LocationFormView(LoginRequiredMixin, FormView):
             status, record = get_geocode(dict(zip_code=zip_code))
         else:
             status, record = get_geocode(dict(city=city, state=state))
-        geolocation = Geolocation(**record)
+        geolocation = Geolocation(user=user, label=label, **record)
         geolocation.save()
-        UserGeolocation.objects.create(user=self.request.user,
-                                       geolocation=geolocation,
-                                       label=form.cleaned_data.get('label'))
         return super().form_valid(form)
 
 
 class LocationView(LoginRequiredMixin, ListView):
+    template_name = 'home.html'
+    context_object_name = 'locations'
+
     def get_queryset(self):
-        users_locations = UserGeolocation.objects \
+        return Geolocation.objects \
             .filter(user_id=self.request.user.id).order_by('label')

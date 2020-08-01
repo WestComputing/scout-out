@@ -10,24 +10,18 @@ class Geolocation(models.Model):
     lat = models.DecimalField(max_digits=8, decimal_places=6)
     lon = models.DecimalField(max_digits=9, decimal_places=6)
     formatted_address = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.formatted_address}: {self.lat}, {self.lon}"
-
-
-class UserGeolocation(models.Model):
+    label = models.CharField(max_length=50, default="Home")
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='users')
-    geolocation = models.ForeignKey(Geolocation, on_delete=models.CASCADE,
-                                    related_name='geolocations')
-    label = models.CharField(max_length=50, default="Home")
 
     class Meta:
         unique_together = ('user', 'label')
 
     def __str__(self):
-        return f"{self.label}: {self.geolocation.city}, {self.geolocation.state} " \
-               f"{self.geolocation.zip_code} ({self.user.username})"
+        return f"{self.label}: " \
+               f"{self.formatted_address}, " \
+               f"{self.lat} x {self.lon} " \
+               f"({self.user.username})"
 
 # class RecArea(models.Model):
 #     name = models.CharField(max_length=100)

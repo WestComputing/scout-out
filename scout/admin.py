@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from .models import Geolocation, UserGeolocation
+from .models import Geolocation
 
 admin.site.register(Geolocation)
-admin.site.register(UserGeolocation)
