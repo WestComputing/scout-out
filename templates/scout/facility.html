@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block head_title %}{{ facility.FacilityName }}{% endblock %}
+{% block content %}
+    <h1>{{ facility.FacilityName }}</h1>
+    {% autoescape off %}
+        <p>{{ facility.FacilityDescription | safe }}</p>
+    {% endautoescape %}
+{% endblock %}

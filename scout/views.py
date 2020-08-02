@@ -83,10 +83,53 @@ def get_rec_areas(lat: str, lon: str) -> list:
     return rec_areas
 
 
+def get_facilities(lat: str, lon: str) -> list:
+    url = f"https://ridb.recreation.gov/api/v1/facilities?"
+    params = dict(full='true', radius='50', latitude=lat, longitude=lon)
+    headers = dict(apikey=settings.API_KEY_RECREATION_GOV)
+    response = requests.get(url, params=params, headers=headers)
+    facilities = []
+    if response.ok:
+        response_json = response.json()
+        facilities = response_json.get('RECDATA', [])
+    return facilities
+
+
+def get_facility(facility_id: str) -> dict:
+    url = f"https://ridb.recreation.gov/api/v1/facilities/{facility_id}"
+    headers = dict(apikey=settings.API_KEY_RECREATION_GOV)
+    response = requests.get(url, headers=headers)
+    facility = {}
+    if response.ok:
+        facility.update(response.json())
+    return facility
+
+
+def render_facility(request, facility_id: str):
+    return render(request, 'scout/facility.html', dict(facility=get_facility(facility_id)))
+
+
+def get_campsites(facility_id: str) -> list:
+    url = f"https://ridb.recreation.gov/api/v1/facilities/{facility_id}/campsites?"
+    params = dict(full='true', radius='50')
+    headers = dict(apikey=settings.API_KEY_RECREATION_GOV)
+    response = requests.get(url, params=params, headers=headers)
+    campsites = []
+    if response.ok:
+        response_json = response.json()
+        campsites = response_json.get('RECDATA', [])
+    return campsites
+
+
 def render_points_of_interest(request, location_id):
     location = get_object_or_404(Geolocation, id=location_id)
-    rec_areas = get_rec_areas(str(location.lat), str(location.lon))
-    return render(request, 'scout/poi_list.html', dict(
-        location=location,
-        rec_areas=rec_areas
-    ))
+    coords = (str(location.lat), str(location.lon))
+    rec_areas = get_rec_areas(*coords)
+    facilities = get_facilities(*coords)
+    campsites = []
+    for facility in facilities:
+        campsites.extend(get_campsites(facility['FacilityID']))
+    return render(request, 'scout/poi_list.html', dict(location=location,
+                                                       rec_areas=rec_areas,
+                                                       facilities=facilities,
+                                                       campsites=campsites))

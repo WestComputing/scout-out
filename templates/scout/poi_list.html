@@ -7,6 +7,17 @@
         {% for area in rec_areas %}
             <hr>
             <h3>{{ area.RecAreaName }}</h3>
+            {% autoescape off %}
+                <p>{{ area.RecAreaDescription | safe }}</p>
+            {% endautoescape %}
+            <p>{{ area.RecAreaPhone }}</p>
+            <p>{{ area.RecAreaEmail }}</p>
+            {% for address in area.RECAREAADDRESS %}
+                {% if address.RecAreaAddressType == 'Physical' %}
+                    <p>{{ address.RecAreaStreetAddress1 }} {{ address.RecAreaStreetAddress2 }} {{ address.RecAreaStreetAddress3 }}
+                        {{ address.City }} {{ address.AddressStateCode }} {{ address.PostalCode }}</p>
+                {% endif %}
+            {% endfor %}
             {% for medium in area.MEDIA %}
                 {% if medium.MediaType == 'Image' %}
                     <h5>{{ medium.Title }}</h5>
@@ -16,14 +27,76 @@
                     </figure>
                 {% endif %}
             {% endfor %}
-            <p>{{ area.RecAreaDescription }}</p>
-            <p>{{ area.RecAreaPhone }} • {{ area.RecAreaEmail }}</p>
-            {% for address in area.RECAREAADDRESS %}
-                {% if address.RecAreaAddressType == 'Physical' %}
-                    <p>{{ address.RecAreaStreetAddress1 }} {{ address.RecAreaStreetAddress2 }} {{ address.RecAreaStreetAddress3 }}
-                        • {{ address.City }}, {{ address.AddressStateCode }} {{ address.PostalCode }}</p>
+            {% if area.FACILITY %}
+                <h5>Facilities</h5>
+                <ul>
+                    {% for facility in area.FACILITY %}
+                        <li><a href={% url 'scout:facility' facility.FacilityID %}>{{ facility.FacilityName }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if area.LINK %}
+                <h5>Links</h5>
+                <ul>
+                    {% for link in area.LINK %}
+                        <li><a href="{{ link.URL }}">{{ link.Title }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if facilities %}
+        <hr>
+        <h2>Facilities</h2>
+        {% for facility in facilities %}
+            <h3>{{ facility.FacilityName }}</h3>
+            {% autoescape off %}
+                <p>{{ facility.FacilityDescription | safe }}</p>
+                <p>{{ facility.FacilityDirections | safe }}</p>
+            {% endautoescape %}
+            <p>{{ facility.FacilityPhone }}</p>
+            <p>{{ facility.FacilityEmail }}</p>
+            {% for address in facility.FACILITYADDRESS %}
+                {% if address.FacilityAddressType == 'Default' %}
+                    <p>{{ address.FacilityStreetAddress1 }} {{ address.FacilityStreetAddress2 }} {{ address.FacilityStreetAddress3 }}
+                        {{ address.City }} {{ address.AddressStateCode }} {{ address.PostalCode }}</p>
                 {% endif %}
             {% endfor %}
+            {% for medium in facility.MEDIA %}
+                {% if medium.MediaType == 'Image' %}
+                    <h5>{{ medium.Title }}</h5>
+                    <figure>
+                        <img src="{{ medium.URL }}" alt="{{ medium.Title }}">
+                        <figcaption>{{ medium.Description }}</figcaption>
+                    </figure>
+                {% endif %}
+            {% endfor %}
+            {% if facility.LINK %}
+                <h5>Links</h5>
+                <ul>
+                    {% for link in facility.LINK %}
+                        <li><a href="{{ link.URL }}">{{ link.LinkType }} {{ link.Title }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         {% endfor %}
+    {% endif %}
+    {% if campsites %}
+        <hr>
+        <h2>Campsites</h2>
+        <ul>
+            {% for campsite in campsites %}
+                <li>{{ campsite.Loop }} {{ campsite.CampsiteType }} <a
+                        href="https://www.google.com/maps/@{{ campsite.CampsiteLatitude }},{{ campsite.CampsiteLongitude }},16z">Map</a>
+                </li>
+                {% if campsite.ATTRIBUTES %}
+                    <ul>
+                        {% for attribute in campsite.ATTRIBUTES %}
+                            <li>{{ attribute.AttributeName }}: {{ attribute.AttributeValue }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endfor %}
+        </ul>
     {% endif %}
 {% endblock %}
