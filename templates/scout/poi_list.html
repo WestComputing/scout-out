@@ -86,8 +86,20 @@
         <h2>Campsites</h2>
         <ul>
             {% for campsite in campsites %}
-                <li>{{ campsite.Loop }} {{ campsite.CampsiteType }} <a
-                        href="https://www.google.com/maps/@{{ campsite.CampsiteLatitude }},{{ campsite.CampsiteLongitude }},16z">Map</a>
+                <li>{{ campsite.Loop }} {{ campsite.CampsiteType }}
+                    <ul>
+                        {% if campsite.Title %}
+                            <li>{{ campsite.Title }}</li>
+                        {% endif %}
+                        {% if campsite.CampsiteLatitude %}
+                            <li>
+                                <a href="https://www.google.com/maps/@{{ campsite.CampsiteLatitude }},{{ campsite.CampsiteLongitude }},16z"
+                                   target="_blank">Map</a></li>
+                        {% endif %}
+                        {% if campsite.Description %}
+                            <li>{{ campsite.Description }}</li>
+                        {% endif %}
+                    </ul>
                 </li>
                 {% if campsite.ATTRIBUTES %}
                     <ul>
