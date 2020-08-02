@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block head_title %}Points of Interest{% endblock %}
+{% block content %}
+    <h1>Points of Interest for {{ location.city }}, {{ location.state }}</h1>
+    {% if rec_areas %}
+        <h2>Recreational Areas</h2>
+        {% for area in rec_areas %}
+            <hr>
+            <h3>{{ area.RecAreaName }}</h3>
+            {% for medium in area.MEDIA %}
+                {% if medium.MediaType == 'Image' %}
+                    <h5>{{ medium.Title }}</h5>
+                    <figure>
+                        <img src="{{ medium.URL }}" alt="{{ medium.Title }}">
+                        <figcaption>{{ medium.Subtitle }}</figcaption>
+                    </figure>
+                {% endif %}
+            {% endfor %}
+            <p>{{ area.RecAreaDescription }}</p>
+            <p>{{ area.RecAreaPhone }} • {{ area.RecAreaEmail }}</p>
+            {% for address in area.RECAREAADDRESS %}
+                {% if address.RecAreaAddressType == 'Physical' %}
+                    <p>{{ address.RecAreaStreetAddress1 }} {{ address.RecAreaStreetAddress2 }} {{ address.RecAreaStreetAddress3 }}
+                        • {{ address.City }}, {{ address.AddressStateCode }} {{ address.PostalCode }}</p>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}

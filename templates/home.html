@@ -12,6 +12,7 @@
                     <th class="text-center">City</th>
                     <th class="text-center">State</th>
                     <th class="text-center">Zip</th>
+                    <th class="text-center">POI Link</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -21,6 +22,7 @@
                         <td class="text-center">{{ location.city }}</td>
                         <td class="text-center">{{ location.state }}</td>
                         <td class="text-center">{{ location.zip_code }}</td>
+                        <td class="text-center"><a href={% url 'scout:poi_list' location.id %}>View POI List</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
