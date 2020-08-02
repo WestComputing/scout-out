@@ -49,10 +49,15 @@ class LocationFormView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         user = self.request.user
-        label = form.cleaned_data.get('label')
         zip_code = form.cleaned_data.get('zip_code')
         city = form.cleaned_data.get("city")
         state = form.cleaned_data.get("state")
+        label = form.cleaned_data.get('label')
+        if not label:
+            if city:
+                label = f"{city}, {state}"
+            else:
+                label = zip_code
         if zip_code:
             status, record = get_geocode(dict(zip_code=zip_code))
         else:
