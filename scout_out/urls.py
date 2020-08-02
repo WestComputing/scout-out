@@ -21,7 +21,7 @@ from scout.views import LocationView
 urlpatterns = [
     path('', LocationView.as_view(template_name='home.html'), name='home'),
     path('admin/', admin.site.urls),
-    path('users/', include('users.urls')),
+    path('accounts/', include('users.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('scout/', include('scout.urls'))
 ]

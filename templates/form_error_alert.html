@@ -3,7 +3,7 @@
         <button type="button" class="close" data-dismiss="alert">×</button>
         {% for field in form %}
             {% if field.errors %}
-                {{ field.label }}: {{ field.errors|striptags }}<br>
+                {{ field.label }}: {{ field.errors }}<br>
             {% endif %}
         {% endfor %}
     </div>

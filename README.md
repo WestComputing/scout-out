@@ -1,2 +1,3 @@
-# scout-out
-Scout Out personal project
+# ScoutOut
+Scout Out
+
