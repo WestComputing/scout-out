@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block head_title %}Delete {{ geolocation.city }}, {{ geolocation.state }}?{% endblock %}
+{% block content %}
+    <h1 class="mt-3 mb-3 p-3 text-center shadow-sm border bg-dark text-light">{{ geolocation.formatted_address }}</h1>
+    <p class="m-5 p-5 border shadow">
+        Delete {{ geolocation.city }} {{ geolocation.state }} {{ geolocation.zip_code }}?</p>
+    <form method="POST">{% csrf_token %}
+        <div class="d-flex flex-wrap justify-content-around">
+            <a href="{% url 'scout:index' %}">
+                <input class="btn btn-lg btn-secondary border shadow rounded-pill my-4 px-4 py-2"
+                       type="button" value="Cancel">
+            </a>
+            <input class="btn btn-lg btn-danger border shadow rounded-pill my-4 px-4 py-2"
+                   type="submit" value="Delete">
+        </div>
+    </form>
+{% endblock %}

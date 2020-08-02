@@ -8,7 +8,7 @@
             <table class="table table-striped table-bordered">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Label</th>
+                    <th>Label (click to delete)</th>
                     <th class="text-center">City</th>
                     <th class="text-center">State</th>
                     <th class="text-center">Zip</th>
@@ -18,7 +18,7 @@
                 <tbody>
                 {% for location in locations %}
                     <tr class="table-transparent">
-                        <td>{{ location.label }}</td>
+                        <td><a href={% url 'scout:location_delete' location.id %}>{{ location.label }}</a></td>
                         <td class="text-center">{{ location.city }}</td>
                         <td class="text-center">{{ location.state }}</td>
                         <td class="text-center">{{ location.zip_code }}</td>

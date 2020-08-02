@@ -1,10 +1,10 @@
 import requests
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import ListView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, DeleteView
 
 from .forms import LocationForm
 from .models import Geolocation
@@ -42,6 +42,11 @@ def get_geocode(payload: dict) -> (str, dict):
     return status, record
 
 
+class UserOwnsItem(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user == self.get_object().user
+
+
 class LocationFormView(LoginRequiredMixin, FormView):
     template_name = 'scout/location_form.html'
     form_class = LocationForm
@@ -74,6 +79,11 @@ class LocationView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Geolocation.objects \
             .filter(user_id=self.request.user.id).order_by('label')
+
+
+class LocationDeleteFormView(LoginRequiredMixin, UserOwnsItem, DeleteView):
+    model = Geolocation
+    success_url = reverse_lazy('scout:index')
 
 
 def get_recdata(lat, lon, url):
